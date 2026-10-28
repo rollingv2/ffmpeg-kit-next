@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
     inputs:
       ref:
-        description: 'tag atau branch'
+        description: 'nama tag (contoh v8.1.0)'
         default: 'v8.1.0'
       flags:
         description: 'opsi android.sh (kosong = hanya tampilkan --help)'
@@ -26,8 +26,13 @@ jobs:
     steps:
       - uses: actions/checkout@v7
         with:
-          ref: ${{ inputs.ref }}
           fetch-depth: 0
+      - name: ambil tag dari repo asli
+        env:
+          REF: ${{ inputs.ref }}
+        run: |
+          git fetch https://github.com/arthenica/ffmpeg-kit-next.git "refs/tags/${REF}:refs/tags/${REF}"
+          git checkout "${REF}"
       - uses: actions/setup-java@v6
         with:
           distribution: 'temurin'
