@@ -6,7 +6,7 @@ on:
         description: 'nama tag (contoh v8.1.0)'
         default: 'v8.1.0'
       flags:
-        description: 'opsi android.sh (kosong = hanya tampilkan --help)'
+        description: 'opsi build (kosong = hanya tampilkan --help)'
         required: false
         default: ''
 
@@ -64,13 +64,25 @@ jobs:
             echo "ANDROID_HOME=${SDK_ROOT}"
             echo "ANDROID_NDK_ROOT=${SDK_ROOT}/ndk/${ANDROID_NDK_VERSION}"
           } >> "$GITHUB_ENV"
+      - name: cari skrip build
+        run: |
+          echo "--- isi folder utama ---"
+          ls
+          echo "--- file android ---"
+          find . -maxdepth 2 -name '*android*' -not -path './.git/*'
+          if [ -f ./android.sh ]; then S=./android.sh
+          elif [ -f ./scripts/start-android.sh ]; then S=./scripts/start-android.sh
+          else S=""; fi
+          echo "BUILD_SCRIPT=$S" >> "$GITHUB_ENV"
+          echo "skrip dipakai: $S"
       - name: help
-        run: ./android.sh --help || true
+        run: |
+          if [ -n "$BUILD_SCRIPT" ]; then "$BUILD_SCRIPT" --help || true; else echo "skrip tidak ditemukan"; fi
       - name: build
         if: ${{ inputs.flags != '' }}
         env:
           FLAGS: ${{ inputs.flags }}
-        run: ./android.sh $FLAGS
+        run: $BUILD_SCRIPT $FLAGS
       - name: log
         if: ${{ always() }}
         run: cat build.log || true
