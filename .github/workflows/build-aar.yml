@@ -3,8 +3,8 @@ on:
   workflow_dispatch:
     inputs:
       ref:
-        description: 'nama tag (contoh v8.1.0)'
-        default: 'v8.1.0'
+        description: 'nama tag (contoh v8.1.2)'
+        default: 'v8.1.2'
       flags:
         description: 'opsi build (kosong = hanya tampilkan --help)'
         required: false
